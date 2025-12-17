@@ -2,6 +2,7 @@ package com.advdb.front.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import com.advdb.front.model.IAGen;
 
 @Controller
@@ -18,8 +20,6 @@ import com.advdb.front.model.IAGen;
 public class IAGenController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    private LocalDateTime dateCreation;
 
     @GetMapping
     public String listIAs(Model model) {
@@ -42,16 +42,18 @@ public class IAGenController {
     public String addIA(@RequestParam String name, @RequestParam String website) {
         String sql = "INSERT INTO IA_Gen (name, website) VALUES (?, ?)";
         String logs = "INSERT INTO logs_ia (type, date_creation, state) VALUES (?, ?, ?)";
+        LocalDateTime dateCreation = LocalDateTime.now();
         jdbcTemplate.update(sql, name, website);
         jdbcTemplate.update(logs, "insertion", dateCreation, "completed");
-        return "forward:/ias";
+        return "redirect:/ias";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteIA(@PathVariable Long id) {
         String logs = "INSERT INTO logs_ia (type, date_creation, state) VALUES (?, ?, ?)";
+        LocalDateTime dateCreation = LocalDateTime.now();
         jdbcTemplate.update("DELETE FROM IA_Gen WHERE id = ?", id);
         jdbcTemplate.update(logs, "deletion", dateCreation, "completed");
-        return "forward:/ias";
+        return "redirect:/ias";
     }
 }
